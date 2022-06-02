@@ -26,8 +26,8 @@ class Title(models.Model):
         Category,
         on_delete=models.CASCADE,
         related_name='titles',
-        # blank=True,
-        # null=True
+        blank=True,
+        null=True
     )
 
     def __str__(self):
