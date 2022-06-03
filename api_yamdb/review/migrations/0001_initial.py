@@ -35,20 +35,20 @@ class Migration(migrations.Migration):
                 ('title_name', models.CharField(max_length=256)),
                 ('year', models.IntegerField()),
                 ('description', models.TextField()),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='reviews.Category')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='review.Category')),
             ],
         ),
         migrations.CreateModel(
             name='TitleGenre',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reviews.Genre')),
-                ('title', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reviews.Title')),
+                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='review.Genre')),
+                ('title', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='review.Title')),
             ],
         ),
         migrations.AddField(
             model_name='title',
             name='genres',
-            field=models.ManyToManyField(through='reviews.TitleGenre', to='reviews.Genre'),
+            field=models.ManyToManyField(through='review.TitleGenre', to='review.Genre'),
         ),
     ]
