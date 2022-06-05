@@ -1,8 +1,14 @@
 import random
 import string
-from django.http import Http404
+
 from django.core.mail import send_mail
+from django.http import Http404
 from rest_framework.views import exception_handler
+
+
+def email_code() -> int:
+    code = ''.join(random.choice(string.digits) for _ in range(6))
+    return int(code)
 
 
 def custom_exception_handler(exc, context):
@@ -12,16 +18,10 @@ def custom_exception_handler(exc, context):
     return response
 
 
-def send_email(email, code):
-    mail_subject = 'Код подтверждения'
-    message = (f'Ваш код подтверждения: {code} . ')
+def send_email(email: str, code: int) -> None:
+    mail_subject = 'Код подтверждения для сайта YAMDB'
+    message = (f'Ваш код подтверждения: {code} . '
+               f'Используйте код для активации токена '
+               f'по адресу /api/v1/auth/token/')
     send_mail(mail_subject, message, 'artemslaks@gmail.com',
               [email], fail_silently=False)
-
-
-def code_gen():
-    generate_code = ''.join(random.choices(string.digits, k=6))
-    return(int(generate_code))
-
-
-print(send_email('pavelmyskin22@gmail.com', code_gen()))

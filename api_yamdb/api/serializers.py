@@ -1,12 +1,12 @@
-from review.models import Genre, Category, Title, TitleGenre
 import datetime
+from email.policy import default
+
+from attr import field
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
-from email.policy import default
-from attr import field
-from rest_framework import serializers
-from review.models import Review, Comment
+
+from review.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
 
@@ -41,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
         if data['username'] == 'me':
             raise serializers.ValidationError('Username "me" уже занято.')
         return data
-
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -112,7 +111,6 @@ class TitleGetSerializer(serializers.ModelSerializer):
             'rating'
         )
         # read_only_fields = ('rating',)
-
 
     def get_rating(self, obj):
         return obj.year

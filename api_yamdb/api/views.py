@@ -1,53 +1,41 @@
-from review.models import Genre, Category, Title
+from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import CategorySerializer, GenreSerializer, TitleGetSerializer, TitlePostSerializer
+from rest_framework import (filters, mixins, pagination, permissions, status,
+                            viewsets)
+from rest_framework.decorators import action
 # from .permissions import IsSuperUserOrReadOnly
 # from .pagination import ItemPagination
 from rest_framework.pagination import LimitOffsetPagination
-from .filter import TitlesFilter
-from django.shortcuts import get_object_or_404
-from django.conf import settings
-from rest_framework import (
-    mixins, status, viewsets, filters, pagination, permissions
-)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.decorators import action
 
-from api.serializers import (
-    UserSerializer, UserEmailCodeSerializer, FullUserSerializer
-)
-from .utils import send_email, code_gen
-from api.permissions import IsAdminOrSuperUser, IsAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
+from api.serializers import (FullUserSerializer, UserEmailCodeSerializer,
+                             UserSerializer)
+from review.models import Category, Comment, Genre, Review, Title
 from users.models import User
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from .serializers import CommentSerializer, ReviewSerializer
-from review.models import Title, Comment, Review
+
+from .filter import TitlesFilter
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleGetSerializer, TitlePostSerializer)
+from .utils import email_code, send_email
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
-    """API for admin actions: get, post, patch, delete users info.
-    """
     queryset = User.objects.all()
     serializer_class = FullUserSerializer
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
-    permission_classes = (IsAdminOrSuperUser, IsAuthenticated)
+    permission_classes = (IsAdminOrSuperUser,)
     pagination_class = pagination.LimitOffsetPagination
     search_fields = ('username',)
 
     @action(detail=False, url_path='me', methods=['GET', 'PATCH'],
             permission_classes=(permissions.IsAuthenticated,))
     def user_get_patch_page(self, request):
-        """
-        Add "me" page for authenticated user: /users/me
-
-        Returns:
-            Response object
-
-        """
         user = request.user
         if request.method == 'GET':
             serializer = self.get_serializer(user)
@@ -67,17 +55,17 @@ class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(status=status.HTTP_200_OK, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK, headers=headers
+        )
 
     def perform_create(self, serializer):
-        code = code_gen()
+        code = email_code()
         send_email(serializer.validated_data.get('email'), code)
         serializer.save(confirmation_code=code)
 
 
 class GetTokenViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    """API for generating token response.
-    """
     queryset = User.objects.all()
     serializer_class = UserEmailCodeSerializer
 
@@ -109,7 +97,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     pagination_class = LimitOffsetPagination
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly,]
+    permission_classes = [IsAdminOrReadOnly, ]
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
@@ -118,7 +106,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     pagination_class = LimitOffsetPagination
-    permission_classes = [IsAdminOrReadOnly,]
+    permission_classes = [IsAdminOrReadOnly, ]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'category', 'genres')
     # filter_class = TitlesFilter
