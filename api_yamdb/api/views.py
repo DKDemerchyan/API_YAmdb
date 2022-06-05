@@ -1,8 +1,9 @@
 from review.models import Genre, Category, Title
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import CategorySerializer, GenreSerializer, TitleGetSerializer, TitlePostSerializer
-# from .permissions import IsSuperUserOrReadOnly
-# from .pagination import ItemPagination
+from .serializers import (
+    CategorySerializer, GenreSerializer,
+    TitleGetSerializer, TitlePostSerializer
+)
 from rest_framework.pagination import LimitOffsetPagination
 from .filter import TitlesFilter
 from django.shortcuts import get_object_or_404
@@ -109,7 +110,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     pagination_class = LimitOffsetPagination
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly,]
+    permission_classes = [IsAdminOrReadOnly, ]
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
@@ -118,7 +119,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     pagination_class = LimitOffsetPagination
-    permission_classes = [IsAdminOrReadOnly,]
+    permission_classes = [IsAdminOrReadOnly, ]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'category', 'genres')
     # filter_class = TitlesFilter
@@ -127,7 +128,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return TitleGetSerializer
         return TitlePostSerializer
->>>>>>> origin/General
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

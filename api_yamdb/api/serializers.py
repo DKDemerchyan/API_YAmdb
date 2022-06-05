@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-from email.policy import default
-from attr import field
-from rest_framework import serializers
-from reviews.models import Review, Comment
-=======
 from review.models import Genre, Category, Title, TitleGenre
 import datetime
 from django.conf import settings
@@ -47,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
         if data['username'] == 'me':
             raise serializers.ValidationError('Username "me" уже занято.')
         return data
-
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -119,10 +112,8 @@ class TitleGetSerializer(serializers.ModelSerializer):
         )
         # read_only_fields = ('rating',)
 
-
     def get_rating(self, obj):
         return obj.year
->>>>>>> origin/General
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -149,7 +140,4 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
-
-=======
     )
->>>>>>> origin/General
