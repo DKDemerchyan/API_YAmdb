@@ -1,7 +1,47 @@
 from review.models import Genre, Category, Title, TitleGenre
-from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
 import datetime
+from django.conf import settings
+from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
+from email.policy import default
+from attr import field
+from rest_framework import serializers
+from review.models import Review, Comment
+from users.models import User
+
+
+class FullUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('first_name', 'last_name', 'username',
+                  'bio', 'role', 'email')
+        model = User
+
+
+class UserEmailCodeSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True, max_length=128)
+    confirmation_code = serializers.IntegerField(required=True)
+
+    def validate(self, data):
+        confirmation_code = data['confirmation_code']
+        user = get_object_or_404(User, username=data['username'])
+        if confirmation_code == settings.RESET_CONFIRMATION_CODE:
+            raise serializers.ValidationError(
+                ('Данный код подтверждения уже был использован.'))
+        if user.confirmation_code != confirmation_code:
+            raise serializers.ValidationError('Неверный код подтверждения')
+        return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+    def validate(self, data):
+        if data['username'] == 'me':
+            raise serializers.ValidationError('Username "me" уже занято.')
+        return data
+
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -37,7 +77,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'genres',
-            'title_name',
+            'name',
             'description',
             'year',
             'category',
@@ -59,19 +99,47 @@ class TitleGetSerializer(serializers.ModelSerializer):
     genres = GenreSerializer(many=True, required=True)
     rating = serializers.SerializerMethodField()
     # rating = serializers.IntegerField(source='review.score', read_only=True)
+
     class Meta:
+        model = Title
         fields = (
             'id',
             'genres',
-            'title_name',
+            'name',
             'description',
             'year',
             'category',
             'rating'
         )
-        model = Title
+        # read_only_fields = ('rating',)
+
 
     def get_rating(self, obj):
         return obj.year
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    title = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True
+    )
+    author = serializers.SlugRelatedField(
+        default=serializers.CurrentUserDefault(),
+        slug_field='username',
+        read_only=True
+    )
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    review = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True
+    )
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )

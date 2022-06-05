@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'djoser',
     'review.apps.ReviewConfig',
     'api.apps.ApiConfig',
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -107,6 +108,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+
+AUTH_USER_MODEL = 'users.User'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'artemslaks@gmail.com'
+EMAIL_HOST_PASSWORD = 'lzqyxbisqssmsplx'
+EMAIL_PORT = 587
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
