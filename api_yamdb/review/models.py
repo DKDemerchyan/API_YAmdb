@@ -2,23 +2,23 @@ from django.db import models
 
 
 class Category(models.Model):
-    category_name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
 
     def __str__(self):
-        return self.category_name
+        return self.name
 
 
 class Genre(models.Model):
-    genre_name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.genre_name
+        return self.name
 
 
 class Title(models.Model):
-    title_name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
     year = models.IntegerField()
     description = models.TextField()
     genres = models.ManyToManyField(Genre, through='TitleGenre')
@@ -31,7 +31,7 @@ class Title(models.Model):
     )
 
     def __str__(self):
-        return self.title_name
+        return self.name
 
 
 class TitleGenre(models.Model):

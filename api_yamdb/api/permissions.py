@@ -1,14 +1,15 @@
 from rest_framework import permissions
 
 
-class IsSuperUserOrReadOnly(permissions.BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        # return (request.user.username =='superuser' or
-        #     request.method in permissions.SAFE_METHODS)
-        if request.user.username in ['superuser', 'admin', 'moderator'] or request.method in permissions.SAFE_METHODS:
-            return True
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated
+        )
 
-
-
-    # def has_permission(self, request, view):
+    def has_object_permission(self, request, view, obj):
+        return (
+                request.method in permissions.SAFE_METHODS
+                or request.user.role == 'admin'
+        )

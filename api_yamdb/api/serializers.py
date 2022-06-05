@@ -1,7 +1,8 @@
-from review.models import Genre, Category, Title, TitleGenre
+import datetime
+
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-import datetime
+from review.models import Category, Genre, Title, TitleGenre
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -37,7 +38,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'genres',
-            'title_name',
+            'name',
             'description',
             'year',
             'category',
@@ -59,17 +60,20 @@ class TitleGetSerializer(serializers.ModelSerializer):
     genres = GenreSerializer(many=True, required=True)
     rating = serializers.SerializerMethodField()
     # rating = serializers.IntegerField(source='review.score', read_only=True)
+
     class Meta:
+        model = Title
         fields = (
             'id',
             'genres',
-            'title_name',
+            'name',
             'description',
             'year',
             'category',
             'rating'
         )
-        model = Title
+        # read_only_fields = ('rating',)
+
 
     def get_rating(self, obj):
         return obj.year
