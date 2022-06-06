@@ -51,10 +51,18 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Genre
+        lookup_field = 'slug'
+
+
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = '__all__'
+        fields = ('name', 'slug')
         model = Category
         lookup_field = 'slug'
 
@@ -65,7 +73,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
         slug_field='slug'
     )
-    genres = serializers.SlugRelatedField(
+    genre = serializers.SlugRelatedField(
         required=True,
         many=True,
         queryset=Genre.objects.all(),
@@ -75,7 +83,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id',
-            'genres',
+            'genre',
             'name',
             'description',
             'year',
@@ -91,29 +99,21 @@ class TitlePostSerializer(serializers.ModelSerializer):
 
 
 class TitleGetSerializer(serializers.ModelSerializer):
-    """rating, пока отсутствует модель review, просто показывает год через метод.
-    При получении модели review строку methodfield и метод get_rating
-    удалить"""
     category = CategorySerializer(required=True)
-    genres = GenreSerializer(many=True, required=True)
-    rating = serializers.SerializerMethodField()
-    # rating = serializers.IntegerField(source='review.score', read_only=True)
+    genre = GenreSerializer(many=True, required=True)
+    rating = serializers.IntegerField(source='review.score', read_only=True)
 
     class Meta:
         model = Title
         fields = (
             'id',
-            'genres',
+            'genre',
             'name',
             'description',
             'year',
             'category',
             'rating'
         )
-        # read_only_fields = ('rating',)
-
-    def get_rating(self, obj):
-        return obj.year
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -134,10 +134,14 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     review = serializers.SlugRelatedField(
-        slug_field='name',
+        slug_field='text',
         read_only=True
     )
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
     )
+
+    class Meta:
+        model = Comment
+        fields = '__all__'

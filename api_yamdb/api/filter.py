@@ -1,12 +1,13 @@
 import django_filters
-
 from review.models import Title
 
 
 class TitlesFilter(django_filters.FilterSet):
-    genres = django_filters.CharFilter(field_name='genres', lookup_expr='slug')
+    genre = django_filters.CharFilter(field_name='genre', lookup_expr='slug')
     category = django_filters.CharFilter(field_name='category', lookup_expr='slug')
+    year = django_filters.NumberFilter(field_name='year', lookup_expr='iexact')
+    name = django_filters.CharFilter(field_name='name', lookup_expr="contains")
 
     class Meta:
         model = Title
-        fields = ['genres', 'category', 'year', 'name']
+        fields = ['genre', 'category', 'year', 'name']
