@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from review.models import Genre, Category, Title, TitleGenre
 import datetime
 from django.conf import settings
@@ -126,6 +127,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True
     )
+
+    def validate(self, data):
+        request = self.context['request']
+        author = request.user
+        title_id = self.context['view'].kwargs.get('title_id')
+        title = get_object_or_404(Title, pk=title_id)
+        if request.method == 'POST':
+            if Review.objects.filter(title=title, author=author).exists():
+                raise ValidationError('Добавить можно лишь один отзыв!')
+        return data
 
     class Meta:
         model = Review

@@ -19,7 +19,9 @@ from api.serializers import (
     UserSerializer, UserEmailCodeSerializer, FullUserSerializer
 )
 from .utils import send_email, code_gen
-from api.permissions import IsAdminOrSuperUser, IsAdminOrReadOnly
+from api.permissions import (
+    IsAdminOrSuperUser, IsAdminOrReadOnly, IsAdminModeratorAuthorOrReadOnly
+)
 from users.models import User
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
@@ -132,7 +134,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    #  permission_classes = [IsAdminModeratorAuthorOrReadOnly]
+    permission_classes = [IsAdminModeratorAuthorOrReadOnly]
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
