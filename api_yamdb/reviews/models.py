@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
 from users.models import User
 
 
@@ -76,8 +75,11 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['-pub_date']
-        constraints = [models.UniqueConstraint(fields=['author', 'title'],
-                                               name='1_review_per_author')]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'], name='1_review_per_author'
+            )
+        ]
         verbose_name = 'Review'
         verbose_name_plural = 'Reviews'
 

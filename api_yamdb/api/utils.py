@@ -20,8 +20,12 @@ def custom_exception_handler(exc, context):
 
 def send_email(email: str, code: int) -> None:
     mail_subject = 'Код подтверждения для сайта YAMDB'
-    message = (f'Ваш код подтверждения: {code} . '
-               f'Используйте код для активации токена '
-               f'по адресу /api/v1/auth/token/')
-    send_mail(mail_subject, message, 'artemslaks@gmail.com',
-              [email], fail_silently=False)
+    message = (
+        f'Ваш код подтверждения: {code} . '
+        f'Используйте код для активации токена '
+        f'по адресу /api/v1/auth/token/'
+    )
+    send_mail(
+        mail_subject, message, 'artemslaks@gmail.com',
+        [email], fail_silently=False
+    )

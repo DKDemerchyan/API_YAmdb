@@ -1,28 +1,32 @@
+from api.permissions import (
+    IsAdminModeratorAuthorOrReadOnly,
+    IsAdminOrReadOnly, IsAdminOrSuperUser
+)
+from api.serializers import (
+    FullUserSerializer, UserEmailCodeSerializer, UserSerializer
+)
 from django.conf import settings
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import (filters, mixins, pagination, permissions, status,
-                            viewsets)
-from rest_framework.decorators import action
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
-
-from api.permissions import (
-    IsAdminOrReadOnly, IsAdminOrSuperUser, IsAdminModeratorAuthorOrReadOnly
+from rest_framework import (
+    filters, mixins, pagination, permissions, status, viewsets
 )
-from api.serializers import (FullUserSerializer, UserEmailCodeSerializer,
-                             UserSerializer)
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 from .filter import TitlesFilter
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer,
-                          TitleGetSerializer, TitlePostSerializer)
+from .serializers import (
+    CategorySerializer, CommentSerializer,
+    GenreSerializer, ReviewSerializer,
+    TitleGetSerializer, TitlePostSerializer
+)
 from .utils import email_code, send_email
-from rest_framework.exceptions import ValidationError
-from django.db.models import Avg
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
@@ -34,8 +38,10 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.LimitOffsetPagination
     search_fields = ('username',)
 
-    @action(detail=False, url_path='me', methods=['GET', 'PATCH'],
-            permission_classes=(permissions.IsAuthenticated,))
+    @action(
+        detail=False, url_path='me', methods=['GET', 'PATCH'],
+        permission_classes=(permissions.IsAuthenticated,)
+    )
     def user_get_patch_page(self, request):
         user = request.user
         if request.method == 'GET':
@@ -81,13 +87,14 @@ class GetTokenViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         user.save()
         token = AccessToken.for_user(user)
         return Response(
-            {'token': str(token)}, status=status.HTTP_200_OK, headers=headers)
+            {'token': str(token)}, status=status.HTTP_200_OK, headers=headers
+        )
 
 
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   GenericViewSet):
+class GenreViewSet(
+    mixins.CreateModelMixin, mixins.ListModelMixin,
+    mixins.DestroyModelMixin, GenericViewSet
+):
     queryset = Genre.objects.all()
     pagination_class = pagination.LimitOffsetPagination
     serializer_class = GenreSerializer
@@ -97,10 +104,10 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      GenericViewSet):
+class CategoryViewSet(
+    mixins.CreateModelMixin, mixins.ListModelMixin,
+    mixins.DestroyModelMixin, GenericViewSet
+):
     queryset = Category.objects.all()
     pagination_class = pagination.LimitOffsetPagination
     serializer_class = CategorySerializer
