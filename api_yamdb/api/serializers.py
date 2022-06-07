@@ -1,19 +1,19 @@
 import datetime
-from email.policy import default
 
-from attr import field
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
 class FullUserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('first_name', 'last_name', 'username',
-                  'bio', 'role', 'email')
+        fields = (
+            'first_name', 'last_name', 'username',
+            'bio', 'role', 'email'
+        )
         model = User
 
 
@@ -26,7 +26,8 @@ class UserEmailCodeSerializer(serializers.Serializer):
         user = get_object_or_404(User, username=data['username'])
         if confirmation_code == settings.RESET_CONFIRMATION_CODE:
             raise serializers.ValidationError(
-                ('Данный код подтверждения уже был использован.'))
+                ('Данный код подтверждения уже был использован.')
+            )
         if user.confirmation_code != confirmation_code:
             raise serializers.ValidationError('Неверный код подтверждения')
         return data
@@ -86,7 +87,6 @@ class TitlePostSerializer(serializers.ModelSerializer):
 class TitleGetSerializer(serializers.ModelSerializer):
     category = CategorySerializer(required=True)
     genre = GenreSerializer(many=True, required=True)
-    # rating = serializers.IntegerField(source='review.score', read_only=True)
     rating = serializers.IntegerField(read_only=True)
 
     class Meta:

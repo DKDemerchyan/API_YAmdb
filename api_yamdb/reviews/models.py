@@ -103,6 +103,3 @@ class Comment(models.Model):
         auto_now_add=True,
         db_index=True
     )
-
-
-
