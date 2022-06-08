@@ -21,7 +21,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
-    year = models.IntegerField()
+    year = models.PositiveSmallIntegerField()
     description = models.TextField()
     genre = models.ManyToManyField(Genre, through='TitleGenre')
     category = models.ForeignKey(
@@ -60,7 +60,7 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         validators=[
             MinValueValidator(1, 'Оценка по десятибалльной шкале'),
@@ -74,10 +74,10 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date', )
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'], name='1_review_per_author'
+                fields=('author', 'title', ), name='1_review_per_author'
             )
         ]
         verbose_name = 'Review'

@@ -112,6 +112,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    class Meta:
+        model = Review
+        fields = '__all__'
+
     def validate(self, data):
         request = self.context.get('request')
         if request.method != 'POST':
@@ -122,10 +126,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Нельзя создавать больше одного обзора'
             )
         return data
-
-    class Meta:
-        model = Review
-        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):

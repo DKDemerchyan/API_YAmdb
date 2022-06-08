@@ -15,12 +15,12 @@ from rest_framework import (
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 from .filter import TitlesFilter
+from .mixins import CreateListDestroyViewSet
 from .serializers import (
     CategorySerializer, CommentSerializer,
     GenreSerializer, ReviewSerializer,
@@ -91,10 +91,7 @@ class GetTokenViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         )
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin, mixins.ListModelMixin,
-    mixins.DestroyModelMixin, GenericViewSet
-):
+class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     pagination_class = pagination.LimitOffsetPagination
     serializer_class = GenreSerializer
@@ -104,10 +101,7 @@ class GenreViewSet(
     lookup_field = 'slug'
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin, mixins.ListModelMixin,
-    mixins.DestroyModelMixin, GenericViewSet
-):
+class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     pagination_class = pagination.LimitOffsetPagination
     serializer_class = CategorySerializer

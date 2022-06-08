@@ -24,11 +24,11 @@ router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet, basename='comments'
 )
-router.register(r'users', AdminUserViewSet, basename='admin_user')
+router.register('users', AdminUserViewSet, basename='admin_user')
 
 auth_router = routers.DefaultRouter()
-auth_router.register(r'signup', UserViewSet, basename='signup')
-auth_router.register(r'token', GetTokenViewSet, basename='token')
+auth_router.register('signup', UserViewSet, basename='signup')
+auth_router.register('token', GetTokenViewSet, basename='token')
 
 
 urlpatterns = [
